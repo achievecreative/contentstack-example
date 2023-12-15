@@ -14,10 +14,9 @@ export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<any>> => {
   const entities: PageEntity[][] = await stack
-    .ContentType("page")
+    .ContentType("product_page")
     .Query()
     .equalTo("url", context.req.url!)
-    .includeReference(["page_components.section.product"])
     .toJSON()
     .find();
   const home = entities[0][0];
@@ -27,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-export default function Home(props: PageEntity) {
+export default function ProductPage(props: PageEntity) {
   const pageComponents = props?.page_components?.map((component) => {
     if (!component) {
       return;

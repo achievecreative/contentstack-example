@@ -1,6 +1,9 @@
 import HeroBanner, { HeroBannerName } from "@/components/HeroBanner/HeroBanner";
 import Section from "@/components/Section/Section";
-import { SectionProps } from "@/components/Section/Section.type";
+import {
+  SectionProps,
+  isSectionProps,
+} from "@/components/Section/Section.type";
 import { PageComponent } from "@/types/ContentTypes";
 import React from "react";
 
@@ -8,25 +11,27 @@ export const renderPageComponent = <T extends Record<string, PageComponent>>(
   component: T
 ): JSX.Element | JSX.Element[] | undefined => {
   if (!component) {
-    return <></>;
+    return <React.Fragment key={component}></React.Fragment>;
   }
   const keys = Object.keys(component);
   return keys.map((componentUid) => {
+    if (isSectionProps(component[componentUid])) {
+      return (
+        <Section
+          key={component[componentUid]._metadata.uid}
+          {...(component[componentUid] as unknown as SectionProps)}
+        />
+      );
+    }
+
     switch (componentUid) {
-      case "section":
-        return (
-          <Section
-            key={component[componentUid]._metadata.uid}
-            {...(component[componentUid] as unknown as SectionProps)}
-          />
-        );
       case HeroBannerName:
-        return <HeroBanner {...component[componentUid]} />;
+        return <HeroBanner key={componentUid} {...component[componentUid]} />;
       default:
         if (process.env.NODE_ENV == "development") {
-          return <p>Not Implemented - {componentUid}</p>;
+          return <p key={componentUid}>Not Implemented - {componentUid}</p>;
         }
-        return <></>;
+        return <React.Fragment key={componentUid}></React.Fragment>;
     }
   });
 };

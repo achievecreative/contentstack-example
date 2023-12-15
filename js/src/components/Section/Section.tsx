@@ -1,8 +1,9 @@
 import { SectionProps } from "./Section.type";
 
 const Section = (props: SectionProps): JSX.Element => {
+  console.log(props);
   return (
-    <div className="max-4xl flex">
+    <div className="max-w-7xl flex flex-auto">
       <div>
         <h2 className="text-4xl font-bold">{props.title_h2}</h2>
         <p>{props.description}</p>
