@@ -17,7 +17,34 @@ export type Content = {
   tags: string[];
 };
 
-export type Home = Content & {
+export type Page = Content & {
+  seo: Seo;
   title: string;
-  page_components: Record<string, any>[];
+  page_components?: Record<string, PageComponent>[];
+  call_to_action: Link;
+  image: Image;
+};
+
+export type Seo = {
+  meta_title: string;
+  meta_description: string;
+  keywords: string;
+  enable_search_index: boolean;
+};
+
+export type PageComponent = {
+  _metadata: {
+    uid: string;
+  };
+};
+
+export type Link = {
+  title: string;
+  href: string;
+};
+
+export type Image = Content & {
+  title: string;
+  url: string;
+  image_alignment: boolean;
 };
