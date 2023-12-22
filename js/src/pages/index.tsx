@@ -28,6 +28,7 @@ export const getServerSideProps: GetServerSideProps = async (
 };
 
 export default function Home(props: PageEntity) {
+  console.log("💕", props);
   const pageComponents = props?.page_components?.map((component) => {
     if (!component) {
       return;

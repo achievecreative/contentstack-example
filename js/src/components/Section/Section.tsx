@@ -1,7 +1,6 @@
 import { SectionProps } from "./Section.type";
 
 const Section = (props: SectionProps): JSX.Element => {
-  console.log(props);
   return (
     <div className="max-w-7xl flex flex-auto">
       <div>

@@ -48,3 +48,15 @@ export type Image = Content & {
   url: string;
   image_alignment: boolean;
 };
+
+export type Header = Content & {
+  logo: Image;
+  notification_bar: {
+    show_announcement: boolean;
+    announcement_text: {};
+  };
+  navigation_menu: (PageComponent & {
+    label: string;
+    page_reference: (PageComponent & { url: string })[];
+  })[];
+};

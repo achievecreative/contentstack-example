@@ -1,4 +1,8 @@
-import HeroBanner, { HeroBannerName } from "@/components/HeroBanner/HeroBanner";
+import HeroBanner from "@/components/HeroBanner/HeroBanner";
+import {
+  HeroBannerProps,
+  isHeroBannerProps,
+} from "@/components/HeroBanner/HeroBanner.types";
 import Section from "@/components/Section/Section";
 import {
   SectionProps,
@@ -24,9 +28,16 @@ export const renderPageComponent = <T extends Record<string, PageComponent>>(
       );
     }
 
+    if (isHeroBannerProps(component[componentUid])) {
+      return (
+        <HeroBanner
+          key={componentUid}
+          {...(component[componentUid] as unknown as HeroBannerProps)}
+        />
+      );
+    }
+
     switch (componentUid) {
-      case HeroBannerName:
-        return <HeroBanner key={componentUid} {...component[componentUid]} />;
       default:
         if (process.env.NODE_ENV == "development") {
           return <p key={componentUid}>Not Implemented - {componentUid}</p>;

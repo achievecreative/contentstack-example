@@ -7,4 +7,15 @@ const stack = new Stack({
   region: process.env.CONTENTSTACK_REGION! as Region,
 });
 
+export const getHeader = async () => {
+  const header = await stack
+    .ContentType("header")
+    .Query()
+    .includeReference("navigation_menu.page_reference")
+    .toJSON()
+    .findOne();
+  console.log(header);
+  return header;
+};
+
 export default stack;
