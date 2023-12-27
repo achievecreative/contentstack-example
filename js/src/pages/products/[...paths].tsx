@@ -28,6 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (
 export default function ProductPage(props: ProductPageEntity) {
   const product =
     props.product?.data?.length > 0 ? props.product.data[0] : null;
+
+  const addToCart = (sku: string | undefined) => {};
   return (
     <>
       <Head>
@@ -55,6 +57,7 @@ export default function ProductPage(props: ProductPageEntity) {
               <button
                 type="button"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={() => addToCart(product?.masterVariant.sku)}
               >
                 Add to cart
               </button>
