@@ -1,8 +1,8 @@
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { ReactNode } from "react";
 import Header from "./components/Header/Header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Roboto({ weight: ["100", "300", "400"], subsets: ["latin"] });
 
 const Layout = ({
   children,

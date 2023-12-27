@@ -60,3 +60,50 @@ export type Header = Content & {
     page_reference: (PageComponent & { url: string })[];
   })[];
 };
+
+export type ProductPage = Content & {
+  seo: Seo;
+  url: string;
+  title: string;
+  product_banner: {
+    banner_image: Image;
+  };
+  product_features: { feature: { title: string; feature: string } }[];
+  product_introducation: {
+    type: string;
+  };
+  product: { data: Product[] };
+};
+
+export type Product = {
+  createdAt: Date;
+  description: ProductText;
+  id: string;
+  key: string;
+  name: ProductText;
+  slug: ProductText;
+  masterVariant: {
+    sku: string;
+    prices: ProductPrice[];
+    availability: {
+      isOnStock: boolean;
+      availableQuantity: number;
+      id: string;
+    };
+  };
+};
+
+export type ProductPrice = {
+  country: string;
+  id: string;
+  value: {
+    type: string;
+    currencyCode: string;
+    centAmount: number;
+    fractionDigits: number;
+  };
+};
+
+export type ProductText = {
+  [key in "en-GB" | "de-DE" | "en-US"]: string;
+};
