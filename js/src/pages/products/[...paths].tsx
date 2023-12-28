@@ -6,9 +6,13 @@ import {
 import Head from "next/head";
 import stack from "@/libs/stack";
 import { ProductPage as ProductPageEntity } from "@/types/ContentTypes";
-import { renderPageComponent } from "@/libs/componentBuilder";
-import { v4 } from "uuid";
 import React from "react";
+import { getCookie, setCookie } from "cookies-next";
+import { ctpClient } from "@/libs/buildClient";
+import {
+  createApiBuilderFromCtpClient,
+  ApiRoot,
+} from "@commercetools/platform-sdk";
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
@@ -20,6 +24,8 @@ export const getServerSideProps: GetServerSideProps = async (
     .toJSON()
     .findOne();
 
+  console.log("🚀", productPage.product.data[0].masterVariant.prices);
+
   return {
     props: productPage,
   };
@@ -29,7 +35,39 @@ export default function ProductPage(props: ProductPageEntity) {
   const product =
     props.product?.data?.length > 0 ? props.product.data[0] : null;
 
-  const addToCart = (sku: string | undefined) => {};
+  const addToCart = async (productId: string | undefined) => {
+    const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
+      projectKey: process.env.NEXT_PUBLIC_COMMERCETOOLS_PROJECTKEY!,
+    });
+
+    let cartId = getCookie("cartId");
+    if (!cartId) {
+      const cart = await apiRoot
+        .carts()
+        .post({ body: { currency: "USD", country: "US" } })
+        .execute();
+      cartId = cart.body.id;
+      setCookie("cartId", cartId);
+    }
+
+    await apiRoot
+      .carts()
+      .withId({ ID: cartId as string })
+      .post({
+        body: {
+          version: 1,
+          actions: [
+            {
+              action: "addLineItem",
+              productId: productId,
+              quantity: 1,
+              variantId: 1,
+            },
+          ],
+        },
+      })
+      .execute();
+  };
   return (
     <>
       <Head>
@@ -57,7 +95,7 @@ export default function ProductPage(props: ProductPageEntity) {
               <button
                 type="button"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => addToCart(product?.masterVariant.sku)}
+                onClick={() => addToCart(product?.id)}
               >
                 Add to cart
               </button>

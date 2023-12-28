@@ -14,7 +14,6 @@ export const getHeader = async () => {
     .includeReference("navigation_menu.page_reference")
     .toJSON()
     .findOne();
-  console.log(header);
   return header;
 };
 
