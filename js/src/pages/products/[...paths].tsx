@@ -6,7 +6,7 @@ import {
 import Head from "next/head";
 import stack from "@/libs/stack";
 import { ProductPage as ProductPageEntity } from "@/types/ContentTypes";
-import React from "react";
+import React, { useRef } from "react";
 import { getCookie, setCookie } from "cookies-next";
 import { ctpClient } from "@/libs/buildClient";
 import {
@@ -32,6 +32,8 @@ export const getServerSideProps: GetServerSideProps = async (
 };
 
 export default function ProductPage(props: ProductPageEntity) {
+  const quantityRef = useRef<HTMLInputElement>();
+
   const product =
     props.product?.data?.length > 0 ? props.product.data[0] : null;
 
@@ -41,6 +43,7 @@ export default function ProductPage(props: ProductPageEntity) {
     });
 
     let cartId = getCookie("cartId");
+    let cartVersion = 1;
     if (!cartId) {
       const cart = await apiRoot
         .carts()
@@ -48,6 +51,13 @@ export default function ProductPage(props: ProductPageEntity) {
         .execute();
       cartId = cart.body.id;
       setCookie("cartId", cartId);
+    } else {
+      const cart = await apiRoot
+        .carts()
+        .withId({ ID: cartId as string })
+        .get()
+        .execute();
+      cartVersion = cart.body.version;
     }
 
     await apiRoot
@@ -55,12 +65,12 @@ export default function ProductPage(props: ProductPageEntity) {
       .withId({ ID: cartId as string })
       .post({
         body: {
-          version: 1,
+          version: cartVersion,
           actions: [
             {
               action: "addLineItem",
               productId: productId,
-              quantity: 1,
+              quantity: +quantityRef.current?.value!,
               variantId: 1,
             },
           ],
@@ -92,6 +102,12 @@ export default function ProductPage(props: ProductPageEntity) {
                 product.masterVariant.prices[0].value.centAmount / 100}
             </div>
             <div>
+              <input
+                type="number"
+                value="1"
+                ref={quantityRef.current}
+                step="1"
+              />
               <button
                 type="button"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
