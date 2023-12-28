@@ -6,13 +6,14 @@ import {
 import Head from "next/head";
 import stack from "@/libs/stack";
 import { ProductPage as ProductPageEntity } from "@/types/ContentTypes";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { getCookie, setCookie } from "cookies-next";
 import { ctpClient } from "@/libs/buildClient";
 import {
   createApiBuilderFromCtpClient,
   ApiRoot,
 } from "@commercetools/platform-sdk";
+import NotificationContext, { NotifyMessage } from "@/libs/notificationContext";
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
@@ -32,7 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (
 };
 
 export default function ProductPage(props: ProductPageEntity) {
-  const quantityRef = useRef<HTMLInputElement>();
+  const quantityRef = useRef<HTMLInputElement>(null);
+  const { setNotification }: NotifyMessage =
+    useContext<NotifyMessage>(NotificationContext);
 
   const product =
     props.product?.data?.length > 0 ? props.product.data[0] : null;
@@ -43,7 +46,7 @@ export default function ProductPage(props: ProductPageEntity) {
     });
 
     let cartId = getCookie("cartId");
-    let cartVersion = 1;
+    let cartVersion = getCookie("cardVersion");
     if (!cartId) {
       const cart = await apiRoot
         .carts()
@@ -51,21 +54,15 @@ export default function ProductPage(props: ProductPageEntity) {
         .execute();
       cartId = cart.body.id;
       setCookie("cartId", cartId);
-    } else {
-      const cart = await apiRoot
-        .carts()
-        .withId({ ID: cartId as string })
-        .get()
-        .execute();
-      cartVersion = cart.body.version;
+      cartVersion = cart.body.version.toString();
     }
 
-    await apiRoot
+    const updatedCart = await apiRoot
       .carts()
       .withId({ ID: cartId as string })
       .post({
         body: {
-          version: cartVersion,
+          version: +cartVersion!,
           actions: [
             {
               action: "addLineItem",
@@ -77,6 +74,17 @@ export default function ProductPage(props: ProductPageEntity) {
         },
       })
       .execute();
+
+    cartVersion = updatedCart.body.version.toString();
+    setCookie("cardVersion", cartVersion);
+
+    if (setNotification) {
+      setNotification({
+        type: "Info",
+        message: "Product is added",
+        display: true,
+      });
+    }
   };
   return (
     <>
@@ -101,16 +109,19 @@ export default function ProductPage(props: ProductPageEntity) {
               {product?.masterVariant.prices[0].value.centAmount &&
                 product.masterVariant.prices[0].value.centAmount / 100}
             </div>
-            <div>
-              <input
-                type="number"
-                value="1"
-                ref={quantityRef.current}
-                step="1"
-              />
+            <div className="flex flex-col gap-3">
+              <div className="gap-2">
+                Qty:
+                <input
+                  type="number"
+                  defaultValue={1}
+                  className="rounded-md py-2 pl-3 leading-6 text-sm ring-1 ml-2"
+                  ref={quantityRef}
+                />
+              </div>
               <button
                 type="button"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded"
                 onClick={() => addToCart(product?.id)}
               >
                 Add to cart

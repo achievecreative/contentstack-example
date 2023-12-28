@@ -1,15 +1,18 @@
 import { ctpClient } from "@/libs/buildClient";
+import NotificationContext, { NotifyMessage } from "@/libs/notificationContext";
 import {
   Cart,
   ClientResponse,
   createApiBuilderFromCtpClient,
 } from "@commercetools/platform-sdk";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 const CartPage = (): JSX.Element => {
   const [cart, setCart] = useState<Cart>();
+  const { setNotification }: NotifyMessage =
+    useContext<NotifyMessage>(NotificationContext);
 
   async function getCart() {
     const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -27,6 +30,8 @@ const CartPage = (): JSX.Element => {
     console.log("🚀", cart);
 
     setCart(cart.body);
+
+    setCookie("cardVersion", cart.body.version);
   }
 
   useEffect(() => {
@@ -39,13 +44,14 @@ const CartPage = (): JSX.Element => {
     });
 
     let cartId = getCookie("cartId");
+    let cardVersion = getCookie("cardVersion");
 
     const cart = await apiRoot
       .carts()
       .withId({ ID: cartId as string })
       .post({
         body: {
-          version: 39,
+          version: +cardVersion!,
           actions: [
             {
               action: "recalculate",
@@ -56,6 +62,15 @@ const CartPage = (): JSX.Element => {
       .execute();
 
     setCart(cart.body);
+    setCookie("cardVersion", cart.body.version);
+
+    if (setNotification) {
+      setNotification({
+        type: "Info",
+        message: "Cart is refreshed",
+        display: true,
+      });
+    }
   }
 
   return (
@@ -88,7 +103,12 @@ const CartPage = (): JSX.Element => {
                   </div>
                 );
               })}
-            <button onClick={() => refreshCart()}>Refresh Cart</button>
+            <button
+              onClick={() => refreshCart()}
+              className="bg-blue-400 text-white py-3 px-4 rounded hover:bg-blue-700 mt-4"
+            >
+              Refresh Cart
+            </button>
           </div>
         </div>
 
