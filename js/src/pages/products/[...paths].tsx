@@ -59,7 +59,7 @@ export default function ProductPage(
     });
 
     let cartId = getCookie("cartId");
-    let cartVersion = getCookie("cardVersion");
+    let cartVersion = getCookie("cartVersion");
     if (!cartId) {
       const cart = await apiRoot
         .carts()
@@ -89,7 +89,7 @@ export default function ProductPage(
       .execute();
 
     cartVersion = updatedCart.body.version.toString();
-    setCookie("cardVersion", cartVersion);
+    setCookie("cartVersion", cartVersion);
 
     if (setNotification) {
       setNotification({

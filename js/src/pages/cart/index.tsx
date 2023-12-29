@@ -10,6 +10,7 @@ import { getCookie, setCookie } from "cookies-next";
 import Head from "next/head";
 import { useContext, useEffect, useRef, useState } from "react";
 import "@adyen/adyen-web/dist/adyen.css";
+import router from "next/router";
 
 const CartPage = (): JSX.Element => {
   const dropInRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,7 @@ const CartPage = (): JSX.Element => {
 
       setCart(cart.body);
 
-      setCookie("cardVersion", cart.body.version);
+      setCookie("cartVersion", cart.body.version);
 
       //initial checkout
       const paymentResponse = await fetch("/api/commerce/initialPayment");
@@ -50,8 +51,21 @@ const CartPage = (): JSX.Element => {
         session: data,
         onPaymentCompleted: async (result: any) => {
           console.info(result);
+          const version = await updateShippingAddress();
 
-          //router.push(`/confirmation?orderid=${cardId}`);
+          const order = await apiRoot
+            .orders()
+            .post({
+              body: {
+                version: version,
+                cart: { typeId: "cart", id: cartId },
+              },
+            })
+            .execute();
+
+          setCookie("cartId", "");
+
+          router.push(`/confirmation?orderid=${order.body.id}`);
         },
         onError: (error: any, component: any) => {
           console.error(error.name, error.message, error.stack, component);
@@ -62,7 +76,7 @@ const CartPage = (): JSX.Element => {
           card: {
             hasHolderName: true,
             holderNameRequired: true,
-            billingAddressRequired: true,
+            billingAddressRequired: false,
           },
         },
       };
@@ -72,6 +86,44 @@ const CartPage = (): JSX.Element => {
       });
     })();
   }, []);
+
+  const updateShippingAddress = async () => {
+    const address = {
+      country: "CN",
+      city: "Xiamen",
+      state: "FuJian",
+      postalCode: "361002",
+    };
+
+    let cartId = getCookie("cartId");
+    let cartVersion = getCookie("cartVersion") as string;
+
+    const cart = await createApiBuilderFromCtpClient(ctpClient)
+      .withProjectKey({
+        projectKey: process.env.NEXT_PUBLIC_COMMERCETOOLS_PROJECTKEY!,
+      })
+      .carts()
+      .withId({ ID: cartId as string })
+      .post({
+        body: {
+          version: +cartVersion,
+          actions: [
+            {
+              action: "setShippingAddress",
+              address: address,
+            },
+            {
+              action: "setBillingAddress",
+              address: address,
+            },
+          ],
+        },
+      })
+      .execute();
+
+    setCookie("cartVersion", cart.body.version);
+    return cart.body.version;
+  };
 
   return (
     <>
