@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@adyen/adyen-web": "^5.55.1",
+    "@adyen/api-library": "^15.1.0",
     "@commercetools/platform-sdk": "^7.1.0",
     "@commercetools/sdk-client-v2": "^2.3.0",
     "@contentstack/live-preview-utils": "^1.4.0",

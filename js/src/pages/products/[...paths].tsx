@@ -142,7 +142,7 @@ export default function ProductPage(
             </div>
             {props.prices?.length > 0 && (
               <div className="text-md leading-6">
-                <h2 className="text-md font-bold">Promo</h2>
+                <h2 className="text-md font-bold">Promotion</h2>
                 {props.prices
                   .find((p) => !p.country)
                   ?.tiers?.map((priceTier) => {
