@@ -12,6 +12,7 @@ import { ctpClient } from "@/libs/buildClient";
 import {
   createApiBuilderFromCtpClient,
   ApiRoot,
+  Price,
 } from "@commercetools/platform-sdk";
 import NotificationContext, { NotifyMessage } from "@/libs/notificationContext";
 
@@ -25,14 +26,26 @@ export const getServerSideProps: GetServerSideProps = async (
     .toJSON()
     .findOne();
 
-  console.log("🚀", productPage.product.data[0].masterVariant.prices);
+  const prices = await createApiBuilderFromCtpClient(ctpClient)
+    .withProjectKey({
+      projectKey: process.env.NEXT_PUBLIC_COMMERCETOOLS_PROJECTKEY!,
+    })
+    .products()
+    .withId({ ID: productPage.product.data[0].id })
+    .get({ queryArgs: { priceCurrency: "USD" } })
+    .execute();
 
   return {
-    props: productPage,
+    props: {
+      ...productPage,
+      prices: prices.body.masterData.current.masterVariant.prices,
+    },
   };
 };
 
-export default function ProductPage(props: ProductPageEntity) {
+export default function ProductPage(
+  props: ProductPageEntity & { prices: Price[] }
+) {
   const quantityRef = useRef<HTMLInputElement>(null);
   const { setNotification }: NotifyMessage =
     useContext<NotifyMessage>(NotificationContext);
@@ -127,6 +140,23 @@ export default function ProductPage(props: ProductPageEntity) {
                 Add to cart
               </button>
             </div>
+            {props.prices?.length > 0 && (
+              <div className="text-md leading-6">
+                <h2 className="text-md font-bold">Promo</h2>
+                {props.prices
+                  .find((p) => !p.country)
+                  ?.tiers?.map((priceTier) => {
+                    return (
+                      <div key={priceTier.minimumQuantity}>
+                        <p>
+                          ${priceTier.value.centAmount / 100} when you buy{" "}
+                          {priceTier.minimumQuantity} and more.
+                        </p>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
           </div>
         </div>
 

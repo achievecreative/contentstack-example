@@ -86,6 +86,9 @@ const CartPage = (): JSX.Element => {
           <div className=" bottom-0 left-0 h-48 items-end bg-gradient-to-t from-white via-white lg:static lg:h-auto lg:w-auto lg:bg-none">
             {cart &&
               cart.lineItems.map((item) => {
+                const defaultPrice = item.variant!.prices![0].value.centAmount!;
+                const linePrice = item.price.value.centAmount;
+
                 return (
                   <div
                     key={item.id}
@@ -93,8 +96,13 @@ const CartPage = (): JSX.Element => {
                   >
                     <div className="flex-grow">{item.name["en-US"]}</div>
 
-                    <div className="flex-grow">
-                      ${item.price.value.centAmount / 100} x {item.quantity}
+                    <div className="flex-grow relative">
+                      {defaultPrice != linePrice && (
+                        <span className="text-sm line-through absolute -top-4">
+                          ${defaultPrice / 100}
+                        </span>
+                      )}
+                      ${linePrice / 100} x {item.quantity}
                     </div>
 
                     <div className="flex-grow">
