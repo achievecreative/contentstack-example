@@ -7,7 +7,7 @@ export default function App({
   Component,
   pageProps,
   ...initialProps
-}: AppProps) {
+}: AppProps & { header: any }) {
   return (
     <Layout header={initialProps?.header}>
       <Component {...pageProps} />

@@ -39,8 +39,6 @@ export const getServerSideProps = async (
 const ConfirmationPage = (props: { order?: Order; products: Product[] }) => {
   const { order, products } = props;
 
-  console.log("🚀", props);
-
   return (
     <>
       <Head>
@@ -53,18 +51,24 @@ const ConfirmationPage = (props: { order?: Order; products: Product[] }) => {
           <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"></div>
         </div>
 
-        <div className="relative place-items-center before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-          <h1 className="text-2xl font-bold">Thank you</h1>
-          <p>Order Id: {order?.id}</p>
+        <div className="relative w-full leading-6 flex flex-col gap-3">
+          <h1 className="text-4xl font-bold py-5">Thank you</h1>
+          <p className="leading-6">
+            Order Id:{" "}
+            <a
+              href={`/orders/details/${order?.id}`}
+              className="text-blue-700 underline cursor-pointer"
+            >
+              {order?.id}
+            </a>
+          </p>
           {order &&
             order.lineItems.map((line) => {
               const product = products.find((p) => p.id == line.productId);
               return (
-                <div key={line.id}>
-                  <div>
-                    {product?.masterData.current.name["en-US"]} x{" "}
-                    {line.quantity} = ${line.totalPrice.centAmount / 100}{" "}
-                  </div>
+                <div key={line.id} className="leading-6">
+                  {product?.masterData.current.name["en-US"]} x{line.quantity} =
+                  ${line.totalPrice.centAmount / 100}
                 </div>
               );
             })}
