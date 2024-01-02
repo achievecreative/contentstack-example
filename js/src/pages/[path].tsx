@@ -19,8 +19,17 @@ import React from "react";
 export const getStaticPaths: GetStaticPaths = async (
   context: GetStaticPathsContext
 ): Promise<GetStaticPathsResult> => {
+  const entities: PageEntity[][] = await stack
+    .ContentType("page")
+    .Query()
+    .notEqualTo("url", "/")
+    .toJSON()
+    .find();
+
+  const paths = entities[0].map((e) => e.url);
+  console.log(paths);
   return {
-    paths: ["/about-us", "/blog", "/contact-us"],
+    paths: paths,
     fallback: false,
   };
 };
@@ -33,9 +42,14 @@ export const getStaticProps: GetStaticProps = async (
     .Query()
     .equalTo("url", `/${context.params!["path"]}`)
     .includeReference(["page_components.section.product"])
+    .includeContentType()
+    .includeCount()
+    .includeFallback()
     .toJSON()
     .find();
   const home = entities[0][0];
+
+  console.log("🚀🚀", home);
 
   return {
     props: home,
@@ -43,7 +57,6 @@ export const getStaticProps: GetStaticProps = async (
 };
 
 export default function Home(props: PageEntity) {
-  //console.log("💕", props);
   const pageComponents = props?.page_components?.map((component) => {
     if (!component) {
       return;

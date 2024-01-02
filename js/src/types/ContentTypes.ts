@@ -23,6 +23,7 @@ export type Page = Content & {
   page_components?: Record<string, PageComponent>[];
   call_to_action: Link;
   image: Image;
+  url: string;
 };
 
 export type Seo = {

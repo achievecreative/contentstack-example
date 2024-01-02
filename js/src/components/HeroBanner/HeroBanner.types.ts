@@ -13,5 +13,11 @@ export const isHeroBannerProps = (props: any): props is HeroBannerProps => {
     return false;
   }
 
-  return true;
+  return (
+    "banner_image" in props &&
+    "bg_color" in props &&
+    "banner_title" in props &&
+    "banner_description" in props &&
+    "call_to_action" in props
+  );
 };
