@@ -91,6 +91,7 @@ export type Product = {
       availableQuantity: number;
       id: string;
     };
+    images: { url: string }[];
   };
 };
 

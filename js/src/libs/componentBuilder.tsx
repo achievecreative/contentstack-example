@@ -3,6 +3,11 @@ import {
   HeroBannerProps,
   isHeroBannerProps,
 } from "@/components/HeroBanner/HeroBanner.types";
+import ProductList from "@/components/ProductList/ProductList";
+import {
+  ProductListProps,
+  isProductListProps,
+} from "@/components/ProductList/ProductList.type";
 import Section from "@/components/Section/Section";
 import {
   SectionProps,
@@ -33,6 +38,15 @@ export const renderPageComponent = <T extends Record<string, PageComponent>>(
         <HeroBanner
           key={componentUid}
           {...(component[componentUid] as unknown as HeroBannerProps)}
+        />
+      );
+    }
+
+    if (isProductListProps(component[componentUid])) {
+      return (
+        <ProductList
+          key={componentUid}
+          {...(component[componentUid] as unknown as ProductListProps)}
         />
       );
     }

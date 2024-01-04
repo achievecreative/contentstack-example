@@ -148,6 +148,9 @@ const CartPage = (): JSX.Element => {
                     const defaultPrice =
                       item.variant!.prices![0].value.centAmount!;
                     const linePrice = item.price.value.centAmount;
+
+                    const total = defaultPrice * item.quantity;
+
                     return (
                       <div
                         key={item.id}
@@ -168,7 +171,12 @@ const CartPage = (): JSX.Element => {
                           ${linePrice / 100} x {item.quantity}
                         </div>
 
-                        <div className="basis-24">
+                        <div className="basis-24 relative">
+                          {total != item.totalPrice.centAmount && (
+                            <span className="text-sm line-through absolute -top-4">
+                              ${total / 100}
+                            </span>
+                          )}
                           ${item.totalPrice.centAmount / 100}
                         </div>
                       </div>

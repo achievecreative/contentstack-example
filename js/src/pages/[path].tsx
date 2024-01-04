@@ -1,7 +1,4 @@
 import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  GetServerSidePropsResult,
   GetStaticPaths,
   GetStaticPathsContext,
   GetStaticPathsResult,
@@ -37,17 +34,24 @@ export const getStaticPaths: GetStaticPaths = async (
 export const getStaticProps: GetStaticProps = async (
   context: GetStaticPropsContext
 ): Promise<GetStaticPropsResult<PageEntity>> => {
-  const entities: PageEntity[][] = await stack
+  const entities: PageEntity = await stack
     .ContentType("page")
     .Query()
     .equalTo("url", `/${context.params!["path"]}`)
-    .includeReference(["page_components.section.product"])
+    .includeReference([
+      "page_components.section.product",
+      "page_components.products.products",
+      "products",
+      "products.url",
+    ])
+    .includeReferenceContentTypeUID()
     .includeContentType()
+    .includeEmbeddedItems()
     .includeCount()
     .includeFallback()
     .toJSON()
-    .find();
-  const home = entities[0][0];
+    .findOne();
+  const home = entities;
 
   console.log("🚀🚀", home);
 
@@ -56,7 +60,7 @@ export const getStaticProps: GetStaticProps = async (
   };
 };
 
-export default function Home(props: PageEntity) {
+export default function Page(props: PageEntity) {
   const pageComponents = props?.page_components?.map((component) => {
     if (!component) {
       return;
