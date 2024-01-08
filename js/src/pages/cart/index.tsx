@@ -11,6 +11,7 @@ import Head from "next/head";
 import { useContext, useEffect, useRef, useState } from "react";
 import "@adyen/adyen-web/dist/adyen.css";
 import router from "next/router";
+import { signIn } from "next-auth/react";
 
 const CartPage = (): JSX.Element => {
   const dropInRef = useRef<HTMLDivElement>(null);
@@ -190,7 +191,6 @@ const CartPage = (): JSX.Element => {
             </div>
           </div>
         </div>
-
         <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:grid-cols-4 lg:text-left"></div>
       </main>
     </>
