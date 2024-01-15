@@ -6,7 +6,8 @@ import NextAuth, {
   User,
 } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
-import { JWT } from "next-auth/jwt/types";
+import { JWT } from "next-auth/jwt";
+
 import AzureADB2C from "next-auth/providers/azure-ad-b2c";
 
 export const authOptions: NextAuthOptions = {
