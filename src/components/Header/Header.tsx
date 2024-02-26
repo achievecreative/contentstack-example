@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Dialog, Popover } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { Header as HeaderEntity } from "@/types/ContentTypes";
+import { msalInstance } from "@/pages/_app";
+import { loginRequest } from "@/libs/authConfig";
+import authContext from "@/libs/AuthContext";
 
-const Header = (props: HeaderEntity): JSX.Element => {
+const Header = (
+  props: HeaderEntity & {
+    account: unknown;
+    id_token: string;
+    access_token: string;
+  }
+): JSX.Element => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const signIn = () => {};
+  const context = useContext(authContext);
 
+  const signIn = () => {
+    msalInstance.loginRedirect(loginRequest);
+  };
+
+  console.log("props", props);
   return (
     <header className="bg-white">
       <nav
@@ -49,10 +63,10 @@ const Header = (props: HeaderEntity): JSX.Element => {
           })}
         </Popover.Group>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-3">
-          {false ? (
-            <span>Welcome {"session.user.name"}</span>
+          {context?.account ? (
+            <span>Welcome {context.account?.name ?? ""}</span>
           ) : (
-            <a href="javascript:void(0)" onClick={() => signIn()}>
+            <a onClick={() => signIn()} className="cursor-pointer">
               Sign in
             </a>
           )}

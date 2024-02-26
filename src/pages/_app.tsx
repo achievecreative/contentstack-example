@@ -3,7 +3,6 @@ import { getHeader } from "@/libs/stack";
 import "@/styles/globals.css";
 import type { AppContext, AppProps } from "next/app";
 
-import { MsalProvider } from "@azure/msal-react";
 import {
   PublicClientApplication,
   EventType,
@@ -11,8 +10,16 @@ import {
   EventPayload,
 } from "@azure/msal-browser";
 import { msalConfig } from "../libs/authConfig";
+import { useEffect, useState } from "react";
+import authContext from "@/libs/AuthContext";
 
 export const msalInstance = new PublicClientApplication(msalConfig);
+
+export const userToken = {
+  account: null,
+  id_token: "",
+  access_token: "",
+};
 
 const isAuthenticationResult = (
   value: EventPayload
@@ -28,6 +35,7 @@ msalInstance.initialize().then(() => {
   }
 
   msalInstance.addEventCallback((event) => {
+    console.log("🚀 msalInstance event", event);
     if (
       event.eventType === EventType.LOGIN_SUCCESS &&
       isAuthenticationResult(event?.payload) &&
@@ -41,13 +49,36 @@ msalInstance.initialize().then(() => {
 
 export default function App({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps,
   ...initialProps
 }: AppProps & { header: any }) {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    msalInstance.handleRedirectPromise().then((tokenResponse) => {
+      console.log("🚀tokenResponse", tokenResponse);
+      let accountObj = null;
+      if (tokenResponse !== null) {
+        accountObj = tokenResponse.account;
+        const id_token = tokenResponse.idToken;
+        const access_token = tokenResponse.accessToken;
+
+        //console.log("🚀🚀", id_token, access_token, accountObj.username);
+        setUser({
+          account: tokenResponse.account,
+          id_token,
+          access_token,
+        });
+      }
+    });
+  }, []);
+
   return (
-    <Layout header={initialProps?.header}>
-      <Component {...pageProps} />
-    </Layout>
+    <authContext.Provider value={user}>
+      <Layout header={initialProps?.header}>
+        <Component {...pageProps} />
+      </Layout>
+    </authContext.Provider>
   );
 }
 

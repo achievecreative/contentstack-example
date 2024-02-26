@@ -17,8 +17,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.AZURE_AD_B2C_CLIENT_SECRET ?? "",
       tenantId: process.env.AZURE_AD_B2C_TENANT_ID ?? "",
       primaryUserFlow: process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW ?? "",
-      authorization: { params: { scope: "offline_access openid" } },
-      //authorization: `https://login.microsoftonline.com/${process.env.AZURE_AD_B2C_TENANT_ID}/v2.0/.well-known/openid-configuration`,
+      //authorization: { params: { scope: "offline_access openid" } },
+      authorization:
+        "https://login.microsoftonline.com/d56c8428-1cc2-4fd2-b589-534a7533c09e/v2.0/.well-known/openid-configuration",
     }),
   ],
   debug: false,

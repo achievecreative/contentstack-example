@@ -1,18 +1,26 @@
+import { Configuration, LogLevel } from "@azure/msal-browser";
+
 // Config object to be passed to Msal on creation
-export const msalConfig = {
+export const msalConfig: Configuration = {
   auth: {
-    clientId: process.env.AZURE_AD_B2C_CLIENT_ID,
-    authority: `https://${process.env.AZURE_AD_B2C_TENANT_ID}.ciamlogin.com/`,
-    clientSecret: process.env.AZURE_AD_B2C_CLIENT_SECRET, // Client secret generated from the app registration in Azure portal
+    clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID!,
+    authority: `https://${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.ciamlogin.com/`,
+    //clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_SECRET!, // Client secret generated from the app registration in Azure portal
+    navigateToLoginRequestUrl: true,
+    redirectUri: "/",
+  },
+  cache: {
+    cacheLocation: "sessionStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO.
+    storeAuthStateInCookie: false, // set this to true if you have to support IE
   },
   system: {
-    allowNativeBroker: false, // Disables WAM Broker,
+    //allowNativeBroker: false, // Disables WAM Broker,
     loggerOptions: {
-      loggerCallback(loglevel: any, message: any, containsPii: any) {
-        console.log(loglevel, message, containsPii);
+      loggerCallback(level: LogLevel, message: string, containsPii: boolean) {
+        console.log(level, message, containsPii);
       },
       piiLoggingEnabled: false,
-      logLevel: "Info",
+      logLevel: LogLevel.Info,
     },
   },
 };
