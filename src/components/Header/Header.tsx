@@ -3,12 +3,11 @@ import { Dialog, Popover } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { Header as HeaderEntity } from "@/types/ContentTypes";
-import { signIn, useSession } from "next-auth/react";
 
 const Header = (props: HeaderEntity): JSX.Element => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { data: session } = useSession();
+  const signIn = () => {};
 
   return (
     <header className="bg-white">
@@ -50,8 +49,8 @@ const Header = (props: HeaderEntity): JSX.Element => {
           })}
         </Popover.Group>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-3">
-          {session?.user?.email ? (
-            <span>Welcome {session.user.name}</span>
+          {false ? (
+            <span>Welcome {"session.user.name"}</span>
           ) : (
             <a href="javascript:void(0)" onClick={() => signIn()}>
               Sign in

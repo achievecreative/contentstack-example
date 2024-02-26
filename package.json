@@ -11,6 +11,9 @@
   "dependencies": {
     "@adyen/adyen-web": "^5.55.1",
     "@adyen/api-library": "^15.1.0",
+    "@azure/msal-browser": "^3.10.0",
+    "@azure/msal-node": "^2.6.4",
+    "@azure/msal-react": "^2.0.12",
     "@commercetools/platform-sdk": "^7.1.0",
     "@commercetools/sdk-client-v2": "^2.3.0",
     "@contentstack/live-preview-utils": "^1.4.0",
@@ -21,7 +24,6 @@
     "contentstack": "^3.17.2",
     "cookies-next": "^4.1.0",
     "next": "^14.0.3",
-    "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
     "uuid": "^9.0.1"
