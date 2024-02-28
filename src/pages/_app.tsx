@@ -56,7 +56,8 @@ export default function App({
 
   useEffect(() => {
     msalInstance.handleRedirectPromise().then((tokenResponse) => {
-      console.log("🚀tokenResponse", tokenResponse);
+      console.log(tokenResponse);
+      console.log("🚀access_token", tokenResponse?.accessToken);
       let accountObj = null;
       if (tokenResponse !== null) {
         accountObj = tokenResponse.account;

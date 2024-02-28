@@ -11,7 +11,6 @@ import Head from "next/head";
 import { useContext, useEffect, useRef, useState } from "react";
 import "@adyen/adyen-web/dist/adyen.css";
 import router from "next/router";
-import { signIn } from "next-auth/react";
 import {
   GetServerSideProps,
   GetServerSidePropsContext,

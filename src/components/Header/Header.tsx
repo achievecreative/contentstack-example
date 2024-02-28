@@ -6,6 +6,7 @@ import { Header as HeaderEntity } from "@/types/ContentTypes";
 import { msalInstance } from "@/pages/_app";
 import { loginRequest } from "@/libs/authConfig";
 import authContext from "@/libs/AuthContext";
+import { Ms_Madi } from "next/font/google";
 
 const Header = (
   props: HeaderEntity & {
@@ -20,6 +21,17 @@ const Header = (
 
   const signIn = () => {
     msalInstance.loginRedirect(loginRequest);
+  };
+
+  const getToken = () => {
+    msalInstance
+      .acquireTokenSilent(loginRequest)
+      .then((response) => {
+        console.log(response.accessToken);
+      })
+      .catch((error) => {
+        return msalInstance.acquireTokenRedirect(loginRequest);
+      });
   };
 
   console.log("props", props);
@@ -70,6 +82,13 @@ const Header = (
               Sign in
             </a>
           )}
+
+          <a
+            onClick={() => getToken()}
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
+            Get Token
+          </a>
 
           <a
             href="/cart"
