@@ -1,10 +1,7 @@
 import { ConfidentialClientApplication, Configuration } from "@azure/msal-node";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const config: Configuration = {
     auth: {
       clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID!,
