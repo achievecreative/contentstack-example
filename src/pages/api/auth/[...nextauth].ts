@@ -13,10 +13,11 @@ import AzureADB2C from "next-auth/providers/azure-ad-b2c";
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADB2C({
-      clientId: process.env.AZURE_AD_B2C_CLIENT_ID ?? "",
-      clientSecret: process.env.AZURE_AD_B2C_CLIENT_SECRET ?? "",
-      tenantId: process.env.AZURE_AD_B2C_TENANT_ID ?? "",
-      primaryUserFlow: process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW ?? "",
+      clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID ?? "",
+      clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_SECRET ?? "",
+      tenantId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID ?? "",
+      primaryUserFlow:
+        process.env.NEXT_PUBLIC_AZURE_AD_B2C_PRIMARY_USER_FLOW ?? "",
       authorization: { params: { scope: "offline_access openid" } },
       //authorization: `https://login.microsoftonline.com/${process.env.AZURE_AD_B2C_TENANT_ID}/v2.0/.well-known/openid-configuration`,
     }),

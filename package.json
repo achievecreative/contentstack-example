@@ -11,6 +11,9 @@
   "dependencies": {
     "@adyen/adyen-web": "^5.55.1",
     "@adyen/api-library": "^15.1.0",
+    "@azure/msal-browser": "^3.10.0",
+    "@azure/msal-node": "^2.6.4",
+    "@azure/msal-react": "^2.0.12",
     "@commercetools/platform-sdk": "^7.1.0",
     "@commercetools/sdk-client-v2": "^2.3.0",
     "@contentstack/live-preview-utils": "^1.4.0",
