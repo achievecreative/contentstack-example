@@ -8,7 +8,7 @@ export default async function handler(
   const config: Configuration = {
     auth: {
       clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID!,
-      authority: `https://${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.b2clogin.com/${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.onmicrosoft.com/${process.env.NEXT_PUBLIC_AZURE_AD_B2C_PRIMARY_USER_FLOW}/`, //`https://${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.ciamlogin.com/`,
+      authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.onmicrosoft.com/`, //`https://${process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID}.ciamlogin.com/`,
 
       clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_SECRET!,
       knownAuthorities: [
@@ -34,21 +34,13 @@ export default async function handler(
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
-  var raw = JSON.stringify({
-    passwordProfile: {
-      forceChangePasswordNextSignIn: false,
-      password: "",
-    },
-  });
-
   var requestOptions = {
-    method: "PATCH",
+    method: "GET",
     headers: myHeaders,
-    body: raw,
   };
 
   const result = await fetch(
-    "https://graph.microsoft.com/v1.0/users/ededa465-e700-4660-85cf-45e38f54d570",
+    "https://graph.microsoft.com/v1.0/users/e59eb7b5-40e8-49b1-814d-575011c12f87?$select=identities,mail,displayName,id",
     requestOptions
   ).then((response) => response.text());
 

@@ -7,21 +7,41 @@ import NextAuth, {
 } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import { JWT } from "next-auth/jwt";
+import { AzureADProfile } from "next-auth/providers/azure-ad";
 
 import AzureADB2C from "next-auth/providers/azure-ad-b2c";
 
+import type { TokenSetParameters } from "openid-client";
+
+const azureB2CConfig = {
+  clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID ?? "",
+  clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_SECRET ?? "",
+  tenantId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID ?? "",
+  primaryUserFlow: process.env.NEXT_PUBLIC_AZURE_AD_B2C_PRIMARY_USER_FLOW ?? "",
+  authorization: { params: { scope: "offline_access openid" } },
+  //authorization: `https://login.microsoftonline.com/${process.env.AZURE_AD_B2C_TENANT_ID}/v2.0/.well-known/openid-configuration`,
+};
+
+const azureADB2CProvider = AzureADB2C(azureB2CConfig);
+
+azureADB2CProvider.wellKnown += "?p=B2C_1A_SIGNUP_SIGNIN";
+azureADB2CProvider.profile = (
+  profile: AzureADProfile,
+  tokens: TokenSetParameters
+) => {
+  return {
+    id: profile.sub,
+    name: profile.name,
+    email: profile.emails,
+    // TODO: Find out how to retrieve the profile picture
+    image: null,
+  } as User;
+};
+
+console.log(azureADB2CProvider);
+
 export const authOptions: NextAuthOptions = {
-  providers: [
-    AzureADB2C({
-      clientId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID ?? "",
-      clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_SECRET ?? "",
-      tenantId: process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_ID ?? "",
-      primaryUserFlow:
-        process.env.NEXT_PUBLIC_AZURE_AD_B2C_PRIMARY_USER_FLOW ?? "",
-      authorization: { params: { scope: "offline_access openid" } },
-      //authorization: `https://login.microsoftonline.com/${process.env.AZURE_AD_B2C_TENANT_ID}/v2.0/.well-known/openid-configuration`,
-    }),
-  ],
+  providers: [azureADB2CProvider],
   debug: false,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
